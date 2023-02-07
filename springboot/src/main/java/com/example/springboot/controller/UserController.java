@@ -3,36 +3,35 @@ package com.example.springboot.controller;
 
 import com.example.springboot.model.User;
 import com.example.springboot.service.UserService;
+import com.example.springboot.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 //import web.model.User;
 //import web.service.UserService;
 
 @Controller
+@RequestMapping("/")
 public class UserController {
 
     private UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    public UserController(UserService userService) {this.userService = userService;}
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "")
     public String index(Model model) {
         model.addAttribute("users", userService.index());
         return "index";
     }
 
-    @GetMapping( "/{id}")
+    @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model) {
 
         model.addAttribute("user", userService.show(id));
@@ -44,8 +43,8 @@ public class UserController {
         return "new";
     }
 
-/*    @PostMapping()
-    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+    @PostMapping()
+    public String create(@ModelAttribute("user") User user, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return "new";
@@ -53,7 +52,7 @@ public class UserController {
 
         userService.save(user);
         return "redirect:/";
-    }*/
+    }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
@@ -61,15 +60,19 @@ public class UserController {
         return "edit";
     }
 
-/*    @PostMapping("/{id}")
-    public String update( @PathVariable("id") int id, Model model) {
-        User user = userService.index();
-        model.addAttribute("user", user);
+    @PostMapping("/{id}")
+    public String update(@ModelAttribute("user") User user, BindingResult bindingResult, @PathVariable("id") int id) {
+
+        if (bindingResult.hasErrors()) {
+            return "edit";
+        }
+
+        userService.update(user, id);
         return "redirect:/";
-    }*/
+    }
 
     @DeleteMapping("{id}")
-    public String delete(@PathVariable("id") int id){
+    public String delete(@PathVariable("id") int id) {
         userService.delete(id);
         return "redirect:/";
     }
